@@ -1,11 +1,7 @@
 import { FC } from "react";
 
 const Home: FC = () => {
-  return (
-    <div className="grid items-center justify-items-center min-h-screen p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      Main Page
-    </div>
-  );
+  return <div className="">Main Page</div>;
 };
 
 export default Home;
