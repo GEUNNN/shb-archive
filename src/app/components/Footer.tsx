@@ -17,8 +17,6 @@ const FooterItem = ({ menu, href, icon, isActive }: FooterItemProps) => {
     ? `/assets/${icon}-selected.svg`
     : `/assets/${icon}.svg`;
 
-  console.log("isActive? >>>>>>", icon, isActive);
-
   return (
     <li>
       <Link href={href} className="flex flex-col items-center">
@@ -31,7 +29,7 @@ const FooterItem = ({ menu, href, icon, isActive }: FooterItemProps) => {
 
 const Footer: FC = () => {
   const pathname = usePathname();
-  console.log("current pathname >>>>>>", pathname);
+
   const menuItems = [
     { name: "HOME", href: "/", icon: "home" },
     { name: "PHOTOS", href: "/photos", icon: "photos" },
