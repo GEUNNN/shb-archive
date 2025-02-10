@@ -1,26 +1,18 @@
 "use client";
 
-import React, { FC } from "react";
-import { DayPicker, getDefaultClassNames } from "react-day-picker";
-import { ko } from "react-day-picker/locale";
-import "react-day-picker/style.css";
+import React, { FC, useState } from "react";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 
 const Calendar: FC = () => {
-  const defaultClassNames = getDefaultClassNames();
-
-  const selectDate = (date: Date) => {
-    console.log(date);
-  };
+  const [date, setDate] = useState<Date | undefined>(new Date());
 
   return (
-    <div className="flex p-4 justify-center items-center py-4">
-      <DayPicker
-        // classNames={{
-        //   root: `${defaultClassNames.root}`,
-        //   chevron: `${defaultClassNames.chevron} fill-amber-500`,
-        // }}
-        locale={ko}
-        onDayClick={(day) => selectDate(day)}
+    <div className="flex">
+      <CalendarComponent
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        className="w-full"
       />
     </div>
   );
