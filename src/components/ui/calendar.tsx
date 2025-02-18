@@ -45,8 +45,15 @@ function Calendar({
         ),
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-8 w-8 p-0 font-normal aria-selected:opacity-100"
+          "h-8 w-8 p-0 font-normal relative aria-selected:opacity-100",
+          // Single Dots
+          "[&.photo:not(.video)]:after:absolute [&.photo:not(.video)]:after:bottom-[-1px] [&.photo:not(.video)]:after:left-1/2 [&.photo:not(.video)]:after:transform [&.photo:not(.video)]:after:-translate-x-1/2 [&.photo:not(.video)]:after:w-[5px] [&.photo:not(.video)]:after:h-[5px] [&.photo:not(.video)]:after:bg-red-500 [&.photo:not(.video)]:after:rounded-full",
+          "[&.video:not(.photo)]:before:content-[''] [&.video:not(.photo)]:before:absolute [&.video:not(.photo)]:before:bottom-[-1px] [&.video:not(.photo)]:before:left-1/2 [&.video:not(.photo)]:before:transform [&.video:not(.photo)]:before:-translate-x-1/2 [&.video:not(.photo)]:before:w-[5px] [&.video:not(.photo)]:before:h-[5px] [&.video:not(.photo)]:before:bg-pink-500 [&.video:not(.photo)]:before:rounded-full",
+          // Paired Dots
+          "[&.photo.video]:after:content-[''] [&.photo.video]:after:absolute [&.photo.video]:after:bottom-[-1px] [&.photo.video]:after:left-1/2 [&.photo.video]:after:transform [&.photo.video]:after:-translate-x-[6px] [&.photo.video]:after:w-[5px] [&.photo.video]:after:h-[5px] [&.photo.video]:after:bg-red-500 [&.photo.video]:after:rounded-full",
+          "[&.video.photo]:before:content-[''] [&.video.photo]:before:absolute [&.video.photo]:before:bottom-[-1px] [&.video.photo]:before:left-1/2 [&.video.photo]:before:transform [&.video.photo]:before:translate-x-[2px] [&.video.photo]:before:w-[5px] [&.video.photo]:before:h-[5px] [&.video.photo]:before:bg-pink-500 [&.video.photo]:before:rounded-full"
         ),
+
         day_range_start: "day-range-start",
         day_range_end: "day-range-end",
         day_selected:
