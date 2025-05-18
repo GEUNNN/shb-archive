@@ -45,7 +45,7 @@ const Video: FC = () => {
   console.log("video");
 
   return (
-    <div className="px-1 grid grid-cols-1 gap-4">
+    <div className="p-2 grid grid-cols-1 gap-4">
       <div className="px-1 flex justify-end gap-3">
         {filter.map((item) => (
           <Badge

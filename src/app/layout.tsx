@@ -28,7 +28,9 @@ export default function RootLayout({
       >
         <div className="relative w-[375px] min-h-screen bg-white shadow-lg overflow-hidden">
           <Header />
-          <main className="">{children}</main>
+          <main className="absolute top-[55px] bottom-[64px] w-full overflow-y-auto">
+            {children}
+          </main>
           <Footer />
         </div>
       </body>

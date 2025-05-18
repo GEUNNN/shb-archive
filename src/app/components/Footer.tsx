@@ -37,7 +37,7 @@ const Footer: FC = () => {
   ];
 
   return (
-    <footer className="absolute bottom-0 left-0 w-full px-5 py-2 bg-white shadow-md">
+    <footer className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[375px] h-[64px] bg-white px-5 py-2 shadow-md z-10">
       <ul className="flex justify-between">
         {menuItems.map((item, idx) => (
           <FooterItem
