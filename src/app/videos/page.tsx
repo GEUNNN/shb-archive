@@ -46,7 +46,7 @@ const Video: FC = () => {
 
   return (
     <div className="p-2 grid grid-cols-1 gap-4">
-      <div className="px-1 flex justify-end gap-3">
+      <div className="px-1 flex justify-end gap-3 sticky top-0 bg-white z-10 py-2">
         {filter.map((item) => (
           <Badge
             key={item.type}
