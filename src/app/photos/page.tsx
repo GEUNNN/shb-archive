@@ -9,6 +9,23 @@ const filter = [
   { type: "플챗", value: "플챗" },
 ];
 
+const photoData = [
+  {
+    photos: [
+      "https://pbs.twimg.com/media/GrUUB46aQAECcmy?format=jpg&name=large",
+      "https://pbs.twimg.com/media/GrUUB5nbkAA760Y?format=jpg&name=large",
+    ],
+    description: "2023.10.01",
+    date: "2025-05-20",
+  },
+  {
+    photos: [
+      "https://i.namu.wiki/i/jZjjVsTYuHrEwTwDLeqIOcURmqDvRMvmz25AYzkrWeVhnqNMeNRnX4D_uby8O2gCDvtr1Ze09dwJ4Nueus61IwjSLQktIIe1Fn9lBmNqYCPIc7UNqlcDPSFhdfxYyYG7jmOpCfizNSkwatTKQodETg.webp",
+      "https://talkimg.imbc.com/TVianUpload/tvian/TViews/image/2024/07/21/a29d0922-0961-4ebb-828b-7aeaeec6e977.jpg",
+    ],
+  },
+];
+
 const Photo: FC = () => {
   const arr = [1, 2, 3, 4, 5];
 
@@ -25,8 +42,13 @@ const Photo: FC = () => {
           </Badge>
         ))}
       </div>
-      {arr.map((item, idx) => (
-        <PhotoItem key={idx} />
+      {photoData.map((item, idx) => (
+        <PhotoItem
+          key={idx}
+          photos={item.photos}
+          description={item.description}
+          date={item.date}
+        />
       ))}
     </div>
   );

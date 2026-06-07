@@ -8,6 +8,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "i.ytimg.com",
       },
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.namu.wiki",
+      },
+      {
+        protocol: "https",
+        hostname: "talkimg.imbc.com",
+      },
     ],
   },
 };
