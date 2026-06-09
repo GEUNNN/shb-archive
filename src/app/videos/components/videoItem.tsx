@@ -10,7 +10,7 @@ interface VideoItemProps {
   date: string;
 }
 
-const videoItem: FC<VideoItemProps> = ({ title, thumbnail, date }) => {
+const VideoItem: FC<VideoItemProps> = ({ title, thumbnail, date }) => {
   console.log("videoItem");
   return (
     <Card
@@ -26,4 +26,4 @@ const videoItem: FC<VideoItemProps> = ({ title, thumbnail, date }) => {
   );
 };
 
-export default videoItem;
+export default VideoItem;

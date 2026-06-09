@@ -4,9 +4,10 @@ import { PhotoItem } from "./components/PhotoItem";
 import { Badge } from "@/components/ui/badge";
 
 const filter = [
-  { type: "인스타", value: "인스타" },
-  { type: "멤트", value: "멤트" },
-  { type: "플챗", value: "플챗" },
+  { type: "전체", value: "All" },
+  { type: "인스타", value: "Instagram" },
+  { type: "트위터", value: "Twitter" },
+  { type: "플챗", value: "Plus Chat" },
 ];
 
 const photoData = [

@@ -40,7 +40,11 @@ export default function VideoPreview({ onPlay }: VideoPreviewProps) {
       >
         {items.map((v) => (
           <SwiperSlide key={v.id} className="!w-[184px]">
-            <button onClick={() => onPlay(v)} className="block w-full text-left">
+            <button
+              onClick={() => onPlay(v)}
+              className="block w-full text-left"
+              aria-label={`${v.title} 영상 재생`}
+            >
               <div
                 className="relative aspect-[16/10] w-full overflow-hidden rounded-[16px]"
                 style={{ boxShadow: "0 5px 14px rgba(80,140,200,0.14)" }}
@@ -61,7 +65,12 @@ export default function VideoPreview({ onPlay }: VideoPreviewProps) {
                     className="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-white/90"
                     style={{ boxShadow: "0 3px 10px rgba(20,50,75,0.25)" }}
                   >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="#2c87cf">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="#2c87cf"
+                    >
                       <path d="M8 5.5l11 6.5-11 6.5z" />
                     </svg>
                   </span>

@@ -20,7 +20,7 @@ const FooterItem = ({ menu, href, icon, isActive }: FooterItemProps) => {
   return (
     <li>
       <Link href={href} className="flex flex-col items-center">
-        <Image src={iconPath} alt={icon} width={24} height={24} />
+        <Image src={iconPath} alt={`${menu} icon`} width={24} height={24} />
         <span className="text-xs">{menu}</span>
       </Link>
     </li>

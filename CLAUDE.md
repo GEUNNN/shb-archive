@@ -23,6 +23,7 @@ No test suite is configured.
 - `/` → `src/app/page.tsx` → renders `HomeMain` which shows a calendar with photo/video date dots
 - `/photos` → `src/app/photos/page.tsx` — photo grid with Swiper carousel per item; filter badges at sticky top
 - `/videos` → `src/app/videos/page.tsx` — video thumbnail grid; filter badges at sticky top
+- `/calendar` → `src/app/calendar/page.tsx` — calendar view (renders calendar with photo/video date dots or dedicated calendar UI)
 
 **Data pattern (current state):** all data is hardcoded mock arrays inside the page files. Filter badges exist in the UI but filtering logic is not yet wired up — badge `onClick` only `console.log`s.
 

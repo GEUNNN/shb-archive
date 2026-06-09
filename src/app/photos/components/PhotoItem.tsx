@@ -23,7 +23,7 @@ export const PhotoItem: FC<PhotoItemProps> = ({
 }) => {
   return (
     <Card className="w-full border-transparent shadow-none">
-      {photos && photos.length == 1 && (
+      {photos && photos.length === 1 && (
         <div className="relative w-full aspect-square">
           <Image
             src={photos[0]}
