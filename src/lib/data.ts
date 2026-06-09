@@ -164,6 +164,26 @@ export const VIDEOS: Video[] = [
     tag: "음악방송",
     f: 1,
   },
+  {
+    id: "v5",
+    title: "단독 라이브 〈여름밤〉",
+    dur: "24:18",
+    date: "2025.06.28",
+    views: "88만",
+    author: "OFFICIAL",
+    tag: "라이브",
+    f: 2,
+  },
+  {
+    id: "v6",
+    title: "음악방송 1위 무대 직캠",
+    dur: "03:48",
+    date: "2025.07.05",
+    views: "165만",
+    author: "@청량모먼트",
+    tag: "음악방송",
+    f: 5,
+  },
 ];
 
 // "N년 전 오늘" reminiscence content (dummy). Dates are derived from today's
