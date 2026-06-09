@@ -63,7 +63,12 @@ export default function VideoCard({ video, k }: VideoCardProps) {
                   className="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-white/90"
                   style={{ boxShadow: "0 3px 10px rgba(20,50,75,0.25)" }}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#2c87cf">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="#2c87cf"
+                  >
                     <path d="M8 5.5l11 6.5-11 6.5z" />
                   </svg>
                 </span>
@@ -86,7 +91,13 @@ export default function VideoCard({ video, k }: VideoCardProps) {
             </span>
           </div>
           <div className="mt-1 flex items-center gap-1 text-[11.5px] text-sub">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="opacity-70">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="opacity-70"
+            >
               <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5z" />
             </svg>
             {video.author}
