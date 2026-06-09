@@ -89,6 +89,26 @@ export const GALLERY: Photo[] = [
   },
 ];
 
+// Instagram-style multi-photo posts (the /photos "album" view). `photos` are
+// FILMS indices until real image URLs land; `tag` = SNS source platform.
+export interface Album {
+  id: string;
+  cap: string;
+  date: string;
+  tag: string; // platform (인스타그램 / 트위터 / 플러스챗)
+  likes: number;
+  ratio: number;
+  photos: number[]; // FILMS indices
+}
+
+export const ALBUMS: Album[] = [
+  { id: "al1", cap: "여름 화보 비하인드", date: "2025.07.02", tag: "인스타그램", likes: 1284, ratio: 1.25, photos: [0, 3, 6, 1, 4] },
+  { id: "al2", cap: "바다 브이로그 스틸컷", date: "2025.06.21", tag: "트위터", likes: 2038, ratio: 1.0, photos: [4, 7, 2] },
+  { id: "al3", cap: "팬사인회 데이 ♡", date: "2025.05.30", tag: "인스타그램", likes: 1755, ratio: 1.25, photos: [5, 3, 6, 0] },
+  { id: "al4", cap: "음악방송 출근길 모음", date: "2025.06.14", tag: "플러스챗", likes: 1471, ratio: 1.33, photos: [1, 2, 6] },
+  { id: "al5", cap: "생일 카페 이벤트", date: "2025.05.13", tag: "인스타그램", likes: 3120, ratio: 1.0, photos: [3, 0, 7, 4, 2, 6] },
+];
+
 export interface Video {
   id: string;
   title: string;

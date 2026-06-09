@@ -3,7 +3,6 @@ import Chip from "@/components/diary/Chip";
 import Tape from "@/components/diary/Tape";
 import { MEMORY_SEEDS } from "@/lib/data";
 
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const pad = (n: number) => String(n).padStart(2, "0");
 
 interface DiaryOnThisDayProps {
@@ -18,7 +17,6 @@ export default function DiaryOnThisDay({ onOpenPhoto }: DiaryOnThisDayProps) {
   const M = now.getMonth() + 1;
   const D = now.getDate();
   const bigDate = `${M}월 ${D}일`;
-  const weekday = `${WEEKDAYS[now.getDay()]}요일`;
 
   const memories = MEMORY_SEEDS.map((s, i) => ({
     ...s,
