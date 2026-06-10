@@ -9,14 +9,15 @@ import "swiper/css/free-mode";
 
 import Film from "@/components/diary/Film";
 import SectionHead from "@/components/diary/SectionHead";
-import { VIDEOS, Video } from "@/lib/data";
+import { Video } from "@/lib/data";
 
 interface VideoPreviewProps {
+  videos: Video[];
   onPlay: (v: Video) => void;
 }
 
-export default function VideoPreview({ onPlay }: VideoPreviewProps) {
-  const items = VIDEOS.slice(0, 4);
+export default function VideoPreview({ videos, onPlay }: VideoPreviewProps) {
+  const items = videos.slice(0, 4);
   return (
     <div className="mt-[26px] pl-[18px]">
       <div className="pr-[18px]">

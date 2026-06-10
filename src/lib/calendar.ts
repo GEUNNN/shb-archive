@@ -1,19 +1,13 @@
-// calendar.ts — month-keyed content helpers for the /calendar route.
-//
-// ┌─ SUPABASE SWAP POINT ───────────────────────────────────────────────────┐
-// │ `getMonthContent(year, month)` is the single seam to swap for real data. │
-// │ Today (dummy): synchronous filter over the in-memory GALLERY/VIDEOS      │
-// │   arrays, matched by MONTH ONLY (year-agnostic) — the fan-archive sample  │
-// │   dates span mixed years, so this surfaces content regardless of year.    │
-// │ Later (Supabase): make it `async`, keep the signature, and query a real   │
-// │   year-month date range, e.g.                                             │
-// │     .gte("date", `${year}-${mm}-01`).lt("date", nextMonthFirstDay)        │
-// │   The calendar page should fetch the visible month and cache fetched      │
-// │   months client-side (Record<"YYYY-MM", DayItem[]>) so month-nav stays    │
-// │   instant — do NOT fetch the whole archive and filter on the frontend.    │
-// └──────────────────────────────────────────────────────────────────────────┘
+// calendar.ts — month-scoped content for the /calendar route, from Supabase.
+// getMonthContent(year, month) queries an exact year-month date range over
+// photos + videos and merges them into a discriminated DayItem[]. The page
+// caches each fetched month client-side so month-nav stays instant.
 
-import { GALLERY, VIDEOS, Video } from "./data";
+import { supabase } from "./supabase";
+import { Video } from "./data";
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const toKRDate = (iso: string) => iso.replaceAll("-", ".");
 
 // "2025.07.02" → { y: 2025, m: 7, d: 2 }
 export function parseDateKR(s: string): { y: number; m: number; d: number } {
@@ -21,80 +15,70 @@ export function parseDateKR(s: string): { y: number; m: number; d: number } {
   return { y, m, d };
 }
 
-// One day's upload — discriminated by `kind` so the photo branch carries the
-// lightbox payload and the video branch carries the original Video for the player.
 export type DayItem =
-  | {
-      kind: "photo";
-      day: number;
-      date: string;
-      title: string;
-      tag: string;
-      f: number;
-      likes: number;
-    }
-  | {
-      kind: "video";
-      day: number;
-      date: string;
-      title: string;
-      tag: string;
-      f: number;
-      dur: string;
-      views: string;
-      ref: Video;
-    };
+  | { kind: "photo"; day: number; date: string; title: string; tag: string; f: number; likes: number }
+  | { kind: "video"; day: number; date: string; title: string; tag: string; f: number; dur: string; views: string; ref: Video };
 
-// Uploads for the given year-month, newest day first.
-// NOTE: `year` is accepted for a production-shaped signature but ignored by the
-// dummy implementation (month-only match). See the SUPABASE SWAP POINT above.
-export function getMonthContent(year: number, month: number): DayItem[] {
+// Uploads in [year-month-01, next-month-01), newest day first.
+export async function getMonthContent(year: number, month: number): Promise<DayItem[]> {
+  const start = `${year}-${pad(month)}-01`;
+  const next = new Date(year, month, 1); // month is 1-indexed → this is the 1st of next month
+  const end = `${next.getFullYear()}-${pad(next.getMonth() + 1)}-01`;
+
+  const [photosRes, videosRes] = await Promise.all([
+    supabase.from("photos").select("id, caption, date, platform, likes, films").gte("date", start).lt("date", end),
+    supabase.from("videos").select("id, title, date, author, category, yt, duration, views, f").gte("date", start).lt("date", end),
+  ]);
+  if (photosRes.error) throw photosRes.error;
+  if (videosRes.error) throw videosRes.error;
+
   const list: DayItem[] = [];
 
-  GALLERY.forEach((g) => {
-    const p = parseDateKR(g.date);
-    if (p.m === month) {
-      list.push({
-        kind: "photo",
-        day: p.d,
-        date: g.date,
-        title: g.cap,
-        tag: g.tag,
-        f: g.f,
-        likes: g.likes,
-      });
-    }
+  (photosRes.data ?? []).forEach((r) => {
+    list.push({
+      kind: "photo",
+      day: Number(r.date.slice(8, 10)),
+      date: toKRDate(r.date),
+      title: r.caption,
+      tag: r.platform,
+      f: (r.films ?? [])[0] ?? 0,
+      likes: r.likes,
+    });
   });
 
-  VIDEOS.forEach((v) => {
-    const p = parseDateKR(v.date);
-    if (p.m === month) {
-      list.push({
-        kind: "video",
-        day: p.d,
-        date: v.date,
-        title: v.title,
-        tag: v.tag,
-        f: v.f,
-        dur: v.dur,
-        views: v.views,
-        ref: v,
-      });
-    }
+  (videosRes.data ?? []).forEach((r) => {
+    const ref: Video = {
+      id: r.id,
+      title: r.title,
+      dur: r.duration,
+      date: toKRDate(r.date),
+      views: r.views,
+      author: r.author,
+      tag: r.category,
+      f: r.f,
+      yt: r.yt ?? undefined,
+    };
+    list.push({
+      kind: "video",
+      day: Number(r.date.slice(8, 10)),
+      date: toKRDate(r.date),
+      title: r.title,
+      tag: r.category,
+      f: r.f,
+      dur: r.duration,
+      views: r.views,
+      ref,
+    });
   });
 
   return list.sort((a, b) => b.day - a.day);
 }
 
-// { day: { photo?: true, video?: true } } — drives the calendar cell dots
-// (blue = photo, coral = video, both = two dots). Derived from getMonthContent
-// so the grid stays dumb and there's one source of truth per month.
-export function marksForMonth(
-  year: number,
-  month: number
-): Record<number, { photo?: true; video?: true }> {
+// Pure: derive cell dots from already-fetched items (no extra query).
+// Replaces the old marksForMonth — the page passes its cached month in.
+export function marksFromItems(items: DayItem[]): Record<number, { photo?: true; video?: true }> {
   const marks: Record<number, { photo?: true; video?: true }> = {};
-  getMonthContent(year, month).forEach((it) => {
+  items.forEach((it) => {
     marks[it.day] = marks[it.day] || {};
     marks[it.day][it.kind] = true;
   });

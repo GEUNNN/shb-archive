@@ -7,17 +7,17 @@ import VideoPreview from "./components/VideoPreview";
 import HomeFooter from "./components/HomeFooter";
 import PhotoLightbox, { LightboxPhoto } from "./components/PhotoLightbox";
 import VideoModal from "./components/VideoModal";
-import { Video } from "@/lib/data";
+import { Album, Video } from "@/lib/data";
 
-const HomeMain: FC = () => {
+const HomeMain: FC<{ albums: Album[]; videos: Video[] }> = ({ albums, videos }) => {
   const [photo, setPhoto] = useState<LightboxPhoto | null>(null);
   const [video, setVideo] = useState<Video | null>(null);
 
   return (
     <div className="pb-2">
       <DiaryOnThisDay onOpenPhoto={(f) => setPhoto({ f })} />
-      <GalleryPreview onOpenPhoto={(f) => setPhoto({ f })} />
-      <VideoPreview onPlay={setVideo} />
+      <GalleryPreview albums={albums} onOpenPhoto={(f) => setPhoto({ f })} />
+      <VideoPreview videos={videos} onPlay={setVideo} />
       <HomeFooter />
 
       <PhotoLightbox photo={photo} onClose={() => setPhoto(null)} />

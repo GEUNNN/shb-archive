@@ -1,15 +1,16 @@
 "use client";
 
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import MiniCalendar from "./components/MiniCalendar";
 import ContentCard from "./components/ContentCard";
 import SectionHead from "@/components/diary/SectionHead";
 import PhotoLightbox, { LightboxPhoto } from "../home/components/PhotoLightbox";
 import VideoModal from "../home/components/VideoModal";
-import { getMonthContent, marksForMonth } from "@/lib/calendar";
+import { getMonthContent, marksFromItems, DayItem } from "@/lib/calendar";
 import { Video } from "@/lib/data";
 
 const DOWS = ["일", "월", "화", "수", "목", "금", "토"];
+const monthKey = (y: number, m: number) => `${y}-${String(m).padStart(2, "0")}`;
 
 const Calendar: FC = () => {
   // single source of "now" — passed down so child grids stay pure
@@ -22,11 +23,28 @@ const Calendar: FC = () => {
   const [selected, setSelected] = useState(today.d);
   const [photo, setPhoto] = useState<LightboxPhoto | null>(null);
   const [video, setVideo] = useState<Video | null>(null);
+  const [cache, setCache] = useState<Record<string, DayItem[]>>({});
 
-  const monthContent = useMemo(() => getMonthContent(view.y, view.m), [view.y, view.m]);
-  const marks = useMemo(() => marksForMonth(view.y, view.m), [view.y, view.m]);
+  const key = monthKey(view.y, view.m);
+  const monthContent = cache[key]; // undefined until fetched
+  const loading = monthContent === undefined;
 
-  const dayItems = monthContent.filter((it) => it.day === selected);
+  // fetch the visible month once; subsequent visits serve from cache
+  useEffect(() => {
+    if (cache[key] !== undefined) return;
+    let cancelled = false;
+    getMonthContent(view.y, view.m).then((items) => {
+      if (!cancelled) setCache((c) => ({ ...c, [key]: items }));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [key, view.y, view.m, cache]);
+
+  const items = useMemo(() => monthContent ?? [], [monthContent]);
+  const marks = useMemo(() => marksFromItems(items), [items]);
+
+  const dayItems = items.filter((it) => it.day === selected);
   const dow = DOWS[new Date(view.y, view.m - 1, selected).getDay()];
   const isCurMonth = view.y === today.y && view.m === today.m;
 
@@ -50,7 +68,7 @@ const Calendar: FC = () => {
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F09884" strokeWidth="2" strokeLinecap="round" style={{ transform: "rotate(-8deg)" }}>
           <path d="M7 2v3M17 2v3M3.5 8h17M5 5h14a1.5 1.5 0 0 1 1.5 1.5V19A1.5 1.5 0 0 1 19 20.5H5A1.5 1.5 0 0 1 3.5 19V6.5A1.5 1.5 0 0 1 5 5z" />
         </svg>
-        <span className="ml-auto font-mono text-[10px] text-sub">{monthContent.length} UPLOADS</span>
+        <span className="ml-auto font-mono text-[10px] text-sub">{items.length} UPLOADS</span>
       </div>
 
       <div className="px-[18px] pt-1">
@@ -98,7 +116,13 @@ const Calendar: FC = () => {
             />
           ))}
 
-          {dayItems.length === 0 && (
+          {loading && (
+            <div className="pt-6 text-center">
+              <p className="text-[13px] text-sub">기록을 불러오는 중…</p>
+            </div>
+          )}
+
+          {!loading && dayItems.length === 0 && (
             <div className="pt-6 text-center">
               <p className="text-[13px] text-sub">
                 {isCurMonth && selected === today.d
