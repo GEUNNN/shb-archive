@@ -111,7 +111,7 @@ const Calendar: FC = () => {
             <ContentCard
               key={it.kind + (it.kind === "video" ? it.ref.id : it.title + it.day)}
               item={it}
-              onOpenPhoto={(f) => setPhoto({ f })}
+              onOpenPhoto={(f, src) => setPhoto({ f, src })}
               onPlay={(v) => setVideo(v.ref)}
             />
           ))}

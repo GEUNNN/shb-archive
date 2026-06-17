@@ -1,17 +1,32 @@
 import { CSSProperties, ReactNode } from "react";
+import Image from "next/image";
 import { FILMS, Glyph } from "@/lib/data";
 
 interface FilmProps {
   f?: number;
+  src?: string; // real image URL (R2). When set, renders next/image instead of the gradient.
+  alt?: string;
   radius?: number | string;
   glyph?: Glyph;
   children?: ReactNode;
   style?: CSSProperties;
 }
 
-// Gradient photo/video placeholder ("필름"). Swap for next/image when real
-// image URLs land (i.ytimg.com / pbs.twimg.com / …).
-export default function Film({ f = 0, radius, glyph = "cloud", children, style }: FilmProps) {
+// Photo/video frame. With a real `src` it renders next/image (object-cover);
+// without one it falls back to the gradient placeholder ("필름").
+export default function Film({ f = 0, src, alt = "", radius, glyph = "cloud", children, style }: FilmProps) {
+  if (src) {
+    return (
+      <div
+        className="relative h-full w-full overflow-hidden"
+        style={{ borderRadius: radius ?? "inherit", ...style }}
+      >
+        <Image src={src} alt={alt} fill sizes="375px" className="object-cover" />
+        {children}
+      </div>
+    );
+  }
+
   const [c0, c1] = FILMS[f] ?? FILMS[0];
   return (
     <div

@@ -16,7 +16,7 @@ export function parseDateKR(s: string): { y: number; m: number; d: number } {
 }
 
 export type DayItem =
-  | { kind: "photo"; day: number; date: string; title: string; tag: string; f: number; likes: number }
+  | { kind: "photo"; day: number; date: string; title: string; tag: string; f: number; src?: string; likes: number }
   | { kind: "video"; day: number; date: string; title: string; tag: string; f: number; dur: string; views: string; ref: Video };
 
 // Uploads in [year-month-01, next-month-01), newest day first.
@@ -26,7 +26,7 @@ export async function getMonthContent(year: number, month: number): Promise<DayI
   const end = `${next.getFullYear()}-${pad(next.getMonth() + 1)}-01`;
 
   const [photosRes, videosRes] = await Promise.all([
-    supabase.from("photos").select("id, caption, date, platform, likes, films").gte("date", start).lt("date", end),
+    supabase.from("photos").select("id, caption, date, platform, likes, films, images").gte("date", start).lt("date", end),
     supabase.from("videos").select("id, title, date, author, category, yt, duration, views, f, is_shorts").gte("date", start).lt("date", end),
   ]);
   if (photosRes.error) throw photosRes.error;
@@ -42,6 +42,7 @@ export async function getMonthContent(year: number, month: number): Promise<DayI
       title: r.caption,
       tag: r.platform,
       f: (r.films ?? [])[0] ?? 0,
+      src: (r.images ?? [])[0],
       likes: r.likes,
     });
   });

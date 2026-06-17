@@ -26,7 +26,8 @@ export interface Album {
   tag: string; // platform (인스타그램 / 트위터 / 플러스챗)
   likes: number;
   ratio: number;
-  photos: number[]; // FILMS indices
+  photos: number[]; // FILMS indices (gradient fallback)
+  images: string[]; // real image URLs (R2); empty → fall back to `photos`
 }
 
 export interface Video {

@@ -7,7 +7,7 @@ import { DayItem } from "@/lib/calendar";
 
 interface ContentCardProps {
   item: DayItem;
-  onOpenPhoto: (f: number) => void; // → PhotoLightbox
+  onOpenPhoto: (f: number, src?: string) => void; // → PhotoLightbox
   onPlay: (item: Extract<DayItem, { kind: "video" }>) => void; // → VideoModal
 }
 
@@ -18,7 +18,7 @@ export default function ContentCard({ item, onOpenPhoto, onPlay }: ContentCardPr
 
   const open = () => {
     if (item.kind === "video") onPlay(item);
-    else onOpenPhoto(item.f);
+    else onOpenPhoto(item.f, item.src);
   };
 
   return (
@@ -31,7 +31,7 @@ export default function ContentCard({ item, onOpenPhoto, onPlay }: ContentCardPr
 
       {/* thumbnail */}
       <div className="relative h-[60px] w-[78px] shrink-0 overflow-hidden rounded-[3px]">
-        <Film f={item.f} glyph={isVideo ? "cloud" : "camera"} radius={0} />
+        <Film src={item.kind === "photo" ? item.src : undefined} f={item.f} glyph={isVideo ? "cloud" : "camera"} radius={0} alt={item.title} />
         {isVideo && (
           <span className="absolute inset-0 flex items-center justify-center">
             <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-white/90">

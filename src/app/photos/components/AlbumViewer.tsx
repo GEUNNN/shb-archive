@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
+import Image from "next/image";
 import Film from "@/components/diary/Film";
 import Chip from "@/components/diary/Chip";
 import { Album } from "@/lib/data";
@@ -30,7 +31,11 @@ export default function AlbumViewer({ album, onClose }: AlbumViewerProps) {
   }, [album, onClose]);
 
   if (!album) return null;
-  const total = album.photos.length;
+  // real images when present, else the gradient placeholders
+  const shots: { src?: string; f?: number }[] = album.images.length
+    ? album.images.map((url) => ({ src: url }))
+    : album.photos.map((f) => ({ f }));
+  const total = shots.length;
 
   return (
     <div
@@ -52,21 +57,35 @@ export default function AlbumViewer({ album, onClose }: AlbumViewerProps) {
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[340px] overflow-hidden rounded-[24px] bg-white shadow-2xl animate-in zoom-in-95 duration-200"
       >
-        <div className="relative w-full" style={{ aspectRatio: `1 / ${album.ratio}`, maxHeight: 430 }}>
+        <div className="relative w-full">
           <Swiper
             modules={[Pagination]}
             pagination={{ dynamicBullets: true }}
             style={{ "--swiper-pagination-color": "#4fb0ef" } as React.CSSProperties}
             onSwiper={setSwiper}
             loop={total > 1}
+            autoHeight
             onSlideChange={(s) => setIndex(s.realIndex)}
-            className="h-full w-full"
+            className="w-full"
           >
-            {album.photos.map((f, k) => (
+            {shots.map((s, k) => (
               <SwiperSlide key={k}>
-                <div className="relative h-full w-full">
-                  <Film f={f} glyph="camera" radius={0} />
-                </div>
+                {s.src ? (
+                  // hug the image: natural aspect, capped to viewport, no crop
+                  <Image
+                    src={s.src}
+                    alt={album.cap}
+                    width={0}
+                    height={0}
+                    sizes="(max-width: 375px) 100vw, 340px"
+                    className="mx-auto h-auto max-h-[80vh] w-auto max-w-full"
+                    onLoad={() => swiper?.updateAutoHeight()}
+                  />
+                ) : (
+                  <div className="relative aspect-[3/4] w-full">
+                    <Film f={s.f} glyph="camera" radius={0} />
+                  </div>
+                )}
               </SwiperSlide>
             ))}
           </Swiper>
@@ -99,9 +118,11 @@ export default function AlbumViewer({ album, onClose }: AlbumViewerProps) {
           <span className="pointer-events-none absolute left-3 top-3 z-10">
             <Chip tone="ghost">{album.tag}</Chip>
           </span>
-          <span className="pointer-events-none absolute right-3 top-3 z-10 rounded-chip bg-black/50 px-2.5 py-[3px] font-mono text-[11px] font-bold text-white">
-            {index + 1} / {total}
-          </span>
+          {total > 1 && (
+            <span className="pointer-events-none absolute right-3 top-3 z-10 rounded-chip bg-black/50 px-2.5 py-[3px] font-mono text-[11px] font-bold text-white">
+              {index + 1} / {total}
+            </span>
+          )}
         </div>
 
         <div className="px-4 pb-4 pt-2.5">

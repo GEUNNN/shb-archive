@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import Film from "@/components/diary/Film";
 import { Glyph } from "@/lib/data";
 
 export interface LightboxPhoto {
   f: number;
+  src?: string; // real image URL (R2); falls back to the gradient when absent
   glyph?: Glyph;
 }
 
@@ -42,9 +44,21 @@ export default function PhotoLightbox({ photo, onClose }: PhotoLightboxProps) {
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[340px] overflow-hidden rounded-[24px] bg-white shadow-2xl animate-in zoom-in-95 duration-200"
       >
-        <div className="relative aspect-square max-h-[440px] w-full">
-          <Film f={photo.f} glyph={photo.glyph ?? "camera"} radius={0} />
-        </div>
+        {photo.src ? (
+          // hug the image: natural aspect, capped to viewport, no crop
+          <Image
+            src={photo.src}
+            alt=""
+            width={0}
+            height={0}
+            sizes="(max-width: 375px) 100vw, 340px"
+            className="mx-auto h-auto max-h-[80vh] w-auto max-w-full"
+          />
+        ) : (
+          <div className="relative aspect-square max-h-[440px] w-full">
+            <Film f={photo.f} glyph={photo.glyph ?? "camera"} radius={0} />
+          </div>
+        )}
         <div className="px-4 py-3.5 font-mono text-[10.5px] tracking-[2px] text-sub">PHOTO</div>
       </div>
     </div>

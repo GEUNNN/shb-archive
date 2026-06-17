@@ -49,8 +49,8 @@ const PhotosClient: FC<{ albums: Album[] }> = ({ albums }) => {
         })}
       </div>
 
-      {/* 2-column polaroid masonry */}
-      <div className="px-3 pt-1.5 [column-count:2] [column-gap:14px]">
+      {/* 2-column grid — row-major so date order reads newest → top-left → right */}
+      <div className="grid grid-cols-2 gap-x-[14px] px-3 pt-1.5">
         {visible.map((a, k) => (
           <AlbumCard key={a.id} album={a} k={k} onOpen={setAlbum} />
         ))}

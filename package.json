@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "add-videos": "tsx scripts/add-videos.ts"
+    "add-videos": "tsx scripts/add-videos.ts",
+    "add-photos": "tsx scripts/add-photos.ts"
   },
   "dependencies": {
     "@radix-ui/react-separator": "^1.1.2",
@@ -26,6 +27,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1070.0",
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -34,6 +36,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
+    "sharp": "^0.35.1",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.22.4",
     "typescript": "^5"

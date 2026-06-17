@@ -6,7 +6,7 @@ import { Album } from "@/lib/data";
 
 interface GalleryPreviewProps {
   albums: Album[];
-  onOpenPhoto: (f: number) => void;
+  onOpenPhoto: (f: number, src?: string) => void;
 }
 
 export default function GalleryPreview({ albums, onOpenPhoto }: GalleryPreviewProps) {
@@ -27,11 +27,11 @@ export default function GalleryPreview({ albums, onOpenPhoto }: GalleryPreviewPr
         {items.map((g) => (
           <button
             key={g.id}
-            onClick={() => onOpenPhoto(g.photos[0])}
+            onClick={() => onOpenPhoto(g.photos[0], g.images[0])}
             className="relative aspect-square overflow-hidden rounded-[18px]"
             style={{ boxShadow: "0 5px 14px rgba(80,140,200,0.14)" }}
           >
-            <Film f={g.photos[0]} glyph="camera" radius={18} />
+            <Film src={g.images[0]} f={g.photos[0]} glyph="camera" radius={18} alt={g.cap} />
             <span className="absolute bottom-2 left-2">
               <Chip tone="ghost" className="px-2 py-1 text-[10px]">
                 {g.tag}
