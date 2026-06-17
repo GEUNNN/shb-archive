@@ -39,6 +39,7 @@ export interface Video {
   tag: string; // category
   f: number;
   yt?: string; // YouTube ID
+  isShorts: boolean; // YouTube Shorts (short-form)
 }
 
 // "N년 전 오늘" reminiscence content (dummy). Dates are derived from today's

@@ -6,11 +6,16 @@ insert into public.tags (kind, label, sort_order) values
   ('platform', '인스타그램', 1),
   ('platform', '트위터',     2),
   ('platform', '플러스챗',   3),
-  ('category', '음악방송',   1),
-  ('category', '직캠',       2),
-  ('category', '라이브',     3),
-  ('category', '비하인드',   4),
-  ('category', '자컨',       5)
+  ('category', '뮤비',       1),
+  ('category', '음악방송',   2),
+  ('category', '직캠',       3),
+  ('category', '라이브',     4),
+  ('category', '비하인드',   5),
+  ('category', '자컨',       6),
+  ('category', '커버',       7),
+  ('category', '챌린지',     8),
+  ('category', '브이로그',   9),
+  ('category', '기타',       10)
 on conflict (kind, label) do nothing;
 
 -- ─── photos (from ALBUMS) ─────────────────────────────────────

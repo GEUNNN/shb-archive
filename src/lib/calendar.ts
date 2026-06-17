@@ -27,7 +27,7 @@ export async function getMonthContent(year: number, month: number): Promise<DayI
 
   const [photosRes, videosRes] = await Promise.all([
     supabase.from("photos").select("id, caption, date, platform, likes, films").gte("date", start).lt("date", end),
-    supabase.from("videos").select("id, title, date, author, category, yt, duration, views, f").gte("date", start).lt("date", end),
+    supabase.from("videos").select("id, title, date, author, category, yt, duration, views, f, is_shorts").gte("date", start).lt("date", end),
   ]);
   if (photosRes.error) throw photosRes.error;
   if (videosRes.error) throw videosRes.error;
@@ -57,6 +57,7 @@ export async function getMonthContent(year: number, month: number): Promise<DayI
       tag: r.category,
       f: r.f,
       yt: r.yt ?? undefined,
+      isShorts: r.is_shorts ?? false,
     };
     list.push({
       kind: "video",

@@ -38,6 +38,7 @@ create table public.videos (
   duration  text not null,
   views     text not null,
   f         int  not null default 0,
+  is_shorts boolean not null default false,  -- YouTube Shorts (≤180s + /shorts redirect)
   created_at timestamptz not null default now()
 );
 

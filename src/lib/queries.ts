@@ -32,7 +32,7 @@ export async function getAlbums(): Promise<Album[]> {
 export async function getVideos(): Promise<Video[]> {
   const { data, error } = await supabase
     .from("videos")
-    .select("id, title, date, author, category, yt, duration, views, f")
+    .select("id, title, date, author, category, yt, duration, views, f, is_shorts")
     .order("date", { ascending: false });
   if (error) throw error;
 
@@ -46,5 +46,11 @@ export async function getVideos(): Promise<Video[]> {
     tag: r.category,
     f: r.f,
     yt: r.yt ?? undefined,
+    isShorts: r.is_shorts ?? false,
   }));
 }
+
+// TODO(shorts-tab): add getShorts() / getLongform() here when the Shorts tab is
+// built. Filter on the `is_shorts` column (.eq("is_shorts", true) / false) so the
+// /videos page and the Shorts tab pull disjoint sets. Each video's is_shorts is
+// stamped at ingest and can be recomputed via `yarn add-videos --backfill-shorts`.
