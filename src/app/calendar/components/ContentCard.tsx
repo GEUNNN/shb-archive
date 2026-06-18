@@ -31,7 +31,19 @@ export default function ContentCard({ item, onOpenPhoto, onPlay }: ContentCardPr
 
       {/* thumbnail */}
       <div className="relative h-[60px] w-[78px] shrink-0 overflow-hidden rounded-[3px]">
-        <Film src={item.kind === "photo" ? item.src : undefined} f={item.f} glyph={isVideo ? "cloud" : "camera"} radius={0} alt={item.title} />
+        <Film
+          src={
+            item.kind === "photo"
+              ? item.src
+              : item.ref.yt
+                ? `https://i.ytimg.com/vi/${item.ref.yt}/hqdefault.jpg`
+                : undefined
+          }
+          f={item.f}
+          glyph={isVideo ? "cloud" : "camera"}
+          radius={0}
+          alt={item.title}
+        />
         {isVideo && (
           <span className="absolute inset-0 flex items-center justify-center">
             <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-white/90">

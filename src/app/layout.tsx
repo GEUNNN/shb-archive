@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import localFont from "next/font/local";
 import { Parisienne } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const pretendard = localFont({
   src: "../app/fonts/PretendardVariable.woff2",
@@ -50,6 +51,9 @@ export default function RootLayout({
           </main>
           <Footer />
         </div>
+        {process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
       </body>
     </html>
   );

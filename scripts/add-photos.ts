@@ -71,7 +71,7 @@ function parseArgs(argv: string[]) {
     const a = argv[i];
     if (a === "--platform") platform = argv[++i] ?? "";
     else if (a === "--date") date = argv[++i] ?? "";
-    else if (a === "--caption") caption = argv[++i] ?? "";
+    else if (a === "--caption") caption = (argv[++i] ?? "").replace(/\\n/g, "\n"); // literal \n → real newline
     else if (a === "--likes") likes = Number(argv[++i]);
     else if (a === "--id") id = argv[++i] ?? "";
     else if (a === "--max-width") maxWidth = Number(argv[++i]);

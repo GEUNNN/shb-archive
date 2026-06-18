@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# local photo-ingest source images (uploaded to R2, not committed)
+/photo
+
 # debug
 npm-debug.log*
 yarn-debug.log*

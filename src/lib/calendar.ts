@@ -16,7 +16,7 @@ export function parseDateKR(s: string): { y: number; m: number; d: number } {
 }
 
 export type DayItem =
-  | { kind: "photo"; day: number; date: string; title: string; tag: string; f: number; src?: string; likes: number }
+  | { kind: "photo"; id: string; day: number; date: string; title: string; tag: string; f: number; src?: string; likes: number }
   | { kind: "video"; day: number; date: string; title: string; tag: string; f: number; dur: string; views: string; ref: Video };
 
 // Uploads in [year-month-01, next-month-01), newest day first.
@@ -37,6 +37,7 @@ export async function getMonthContent(year: number, month: number): Promise<DayI
   (photosRes.data ?? []).forEach((r) => {
     list.push({
       kind: "photo",
+      id: r.id,
       day: Number(r.date.slice(8, 10)),
       date: toKRDate(r.date),
       title: r.caption,

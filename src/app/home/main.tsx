@@ -15,7 +15,7 @@ const HomeMain: FC<{ albums: Album[]; videos: Video[] }> = ({ albums, videos }) 
 
   return (
     <div className="pb-2">
-      <DiaryOnThisDay onOpenPhoto={(f) => setPhoto({ f })} />
+      <DiaryOnThisDay albums={albums} videos={videos} onOpenPhoto={(f, src) => setPhoto({ f, src })} onPlay={setVideo} />
       <GalleryPreview albums={albums} onOpenPhoto={(f, src) => setPhoto({ f, src })} />
       <VideoPreview videos={videos} onPlay={setVideo} />
       <HomeFooter />

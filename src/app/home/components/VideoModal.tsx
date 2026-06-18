@@ -37,6 +37,10 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[350px] overflow-hidden rounded-[22px] shadow-2xl animate-in zoom-in-95 duration-200"
       >
+        {/* TODO(shorts): when video.isShorts, render a vertical 9:16 player
+            (narrow ~270px wrapper) instead of this 16:10 box. Part of the
+            planned Shorts work: (1) /shorts tab, (2) shorts layout. Until then
+            Shorts play letterboxed in this landscape box. */}
         <div className="relative aspect-[16/10] w-full bg-black">
           {video.yt ? (
             <iframe

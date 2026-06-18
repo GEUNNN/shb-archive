@@ -109,7 +109,7 @@ const Calendar: FC = () => {
         <div className="flex flex-col gap-[11px]">
           {dayItems.map((it) => (
             <ContentCard
-              key={it.kind + (it.kind === "video" ? it.ref.id : it.title + it.day)}
+              key={it.kind + "-" + (it.kind === "video" ? it.ref.id : it.id)}
               item={it}
               onOpenPhoto={(f, src) => setPhoto({ f, src })}
               onPlay={(v) => setVideo(v.ref)}

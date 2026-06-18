@@ -126,7 +126,7 @@ export default function AlbumViewer({ album, onClose }: AlbumViewerProps) {
         </div>
 
         <div className="px-4 pb-4 pt-2.5">
-          <div className="font-display text-[18px] font-extrabold text-ink">{album.cap}</div>
+          <div className="whitespace-pre-line font-display text-[18px] font-extrabold leading-snug text-ink">{album.cap}</div>
           <div className="mt-1.5 flex items-center justify-between">
             <span className="text-[12.5px] text-sub">
               {album.date} · 사진 {total}장
