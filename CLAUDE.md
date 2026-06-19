@@ -5,12 +5,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-yarn dev      # start dev server with Turbopack
-yarn build    # production build
-yarn lint     # ESLint via next lint
+yarn dev        # start dev server with Turbopack
+yarn build      # production build
+yarn lint       # ESLint via next lint
+
+yarn add-photos <folder…> --platform <인스타그램|트위터|플러스챗> [--url "<post link>"]  # ingest photos → R2 + Supabase
+yarn add-videos …                                                                      # ingest YouTube videos → Supabase
 ```
 
 No test suite is configured.
+
+## Deployment
+
+- **Hosted on Vercel.** Production branch = `main`; every push to `main` auto-builds and deploys (CI/CD, no config files needed). Non-`main` branches get preview deploys.
+- **Release flow:** work on `develop` → merge `develop` → `main` locally → push `main` → Vercel auto-deploys. Keep `develop` and `main` in sync.
+- **`next` is pinned to an exact version (`15.3.9`), not a range.** Vercel blocks builds on Next.js versions with critical security advisories (15.1.6 was blocked). When bumping, move to a patched release and re-run `yarn build` locally first; never downgrade.
+- Runtime env vars must be set in the Vercel dashboard (Settings → Environment Variables, Production scope) — see the env list under Architecture. Script-only secrets must **not** be added to Vercel.
+- Custom domain, when wanted: Vercel → Settings → Domains.
 
 ## Architecture
 
@@ -25,22 +36,25 @@ No test suite is configured.
 - `/videos` → `src/app/videos/page.tsx` — video thumbnail grid; filter badges at sticky top
 - `/calendar` → `src/app/calendar/page.tsx` — calendar view (renders calendar with photo/video date dots or dedicated calendar UI)
 
-**Data pattern (current state):** all data is hardcoded mock arrays inside the page files. Filter badges exist in the UI but filtering logic is not yet wired up — badge `onClick` only `console.log`s.
+**Data flow (live):** Supabase (PostgreSQL) is the backend. Server Components fetch via `src/lib/queries.ts` (`getAlbums` / `getVideos`), which map DB columns onto the `Album` / `Video` types in `src/lib/data.ts`, then pass the full dataset to Client Components that filter in-memory via `useState` (no re-queries on filter change). The `/photos` and `/videos` pages use ISR (`export const revalidate = 60`). The Supabase client (`src/lib/supabase.ts`) uses the public anon key (read-only via RLS — public `SELECT` must stay enabled on `photos`/`videos`).
 
-**Planned backend:** Supabase (PostgreSQL). Required env vars when integrating:
+**Photo hosting:** real images live on **Cloudflare R2**, not Supabase Storage; `photos.images` holds R2 URLs. `photos.source_url` holds the original post link (트위터/인스타그램), surfaced as a clickable X/Instagram logo in `AlbumViewer`.
+
+**Env vars — runtime (set in BOTH `.env.local` and Vercel, Production scope):**
 
 ```
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
+NEXT_PUBLIC_GA_ID              # optional; GA renders only in production when set
 ```
 
-Planned data flow: Server Components fetch from Supabase → pass full dataset to Client Component → in-memory filter via `useState` (no re-queries on filter change).
+**Env vars — local / ingest-script only (NEVER in Vercel, never `NEXT_PUBLIC_`, never commit):** `SUPABASE_SECRET_KEY`, `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE`, `YOUTUBE_API_KEY` — used by `yarn add-photos` / `yarn add-videos`, run from your machine. DB edits / recategorization are done at the Supabase SQL level, not via the front-end.
 
 **UI components:** shadcn/ui (`new-york` style, `zinc` base color) under `src/components/ui/`. Add new shadcn components with `npx shadcn@latest add <component>`.
 
 **Accent color:** `#F09884` (salmon/pink) — used on filter badges and Swiper pagination.
 
-**Images:** `next/image` with remote patterns configured in `next.config.ts` for `i.ytimg.com`, `pbs.twimg.com`, `i.namu.wiki`, `talkimg.imbc.com`. Add new domains there before using external image URLs.
+**Images:** `next/image` with remote patterns configured in `next.config.ts` for `i.ytimg.com`, `pbs.twimg.com`, `i.namu.wiki`, `talkimg.imbc.com`, and `**.r2.dev` (Cloudflare R2 photo host). Add new domains there before using external image URLs.
 
 **Font:** Pretendard variable font loaded as a local font via `next/font/local`.
 
@@ -97,5 +111,5 @@ coral #F09884 (signature) · coralSoft #ffe2da
 
 ### Data (Supabase)
 
-- `photos` (filter = `platform`) · `videos` (filter = `category`, `yt` = YouTube ID) · `tags` (filter-option master). No table for person profile (hardcode in components).
-- The `Film` slots in prototype `source/data.jsx` = empty frames for real images → replace with `next/image`.
+- `photos` (filter = `platform`; `images` = R2 URLs; `source_url` = original post link) · `videos` (filter = `category`, `yt` = YouTube ID, `is_shorts` flag) · `tags` (filter-option master). No table for person profile (hardcode in components).
+- `Film` (`src/components/diary/Film.tsx`) renders gradient placeholders (`FILMS` in `src/lib/data.ts`) used as a fallback when a row has no real `images`; real images render via `next/image`.
