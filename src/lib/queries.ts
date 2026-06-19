@@ -13,7 +13,7 @@ const toKRDate = (iso: string) => iso.replaceAll("-", ".");
 export async function getAlbums(): Promise<Album[]> {
   const { data, error } = await supabase
     .from("photos")
-    .select("id, caption, date, platform, likes, ratio, films, images")
+    .select("id, caption, date, platform, likes, ratio, films, images, source_url")
     .order("date", { ascending: false })
     .order("created_at", { ascending: false }); // tiebreaker for same-date posts
   if (error) throw error;
@@ -27,6 +27,7 @@ export async function getAlbums(): Promise<Album[]> {
     ratio: Number(r.ratio),
     photos: r.films ?? [],
     images: r.images ?? [],
+    url: r.source_url ?? undefined,
   }));
 }
 

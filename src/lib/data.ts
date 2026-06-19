@@ -28,6 +28,7 @@ export interface Album {
   ratio: number;
   photos: number[]; // FILMS indices (gradient fallback)
   images: string[]; // real image URLs (R2); empty → fall back to `photos`
+  url?: string; // original post URL (트위터/인스타그램 only); undefined → no source link
 }
 
 export interface Video {

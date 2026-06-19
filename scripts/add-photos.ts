@@ -7,6 +7,7 @@
 // Usage:
 //   yarn add-photos <folder…> --platform <인스타그램|트위터|플러스챗> \
 //                   [--date YYYY-MM-DD] [--caption "…"] [--likes N] [--id <postId>] \
+//                   [--url "<original post url>"] \
 //                   [--flat] [--max-width 1440] [--quality 80] [--format webp|jpeg] [--dry-run]
 //
 // Examples:
@@ -16,8 +17,9 @@
 //
 //   --flat: each image in a folder becomes its own 1-photo post (default: all images → one post).
 //   --date defaults to the folder name in YYMMDD form (e.g. "260616" → 2026-06-16).
-//   --date / --id can't be combined with multiple folders; --id can't be combined with --flat.
+//   --date / --id / --url can't be combined with multiple folders; --id can't be combined with --flat.
 //   --caption is optional (플러스챗 posts often have none); stored as "" if omitted.
+//   --url is optional — the original post link (트위터/인스타그램); stored as null if omitted.
 //
 // Examples:
 //   yarn add-photos ~/photos/260522 --platform 인스타그램 --date 2026-05-22 --caption "여름 화보" --dry-run
@@ -61,6 +63,7 @@ function parseArgs(argv: string[]) {
   let caption = "";
   let likes = 0;
   let id = "";
+  let url = "";
   let maxWidth = 1440;
   let quality = 80;
   let format = "webp";
@@ -74,6 +77,7 @@ function parseArgs(argv: string[]) {
     else if (a === "--caption") caption = (argv[++i] ?? "").replace(/\\n/g, "\n"); // literal \n → real newline
     else if (a === "--likes") likes = Number(argv[++i]);
     else if (a === "--id") id = argv[++i] ?? "";
+    else if (a === "--url") url = argv[++i] ?? "";
     else if (a === "--max-width") maxWidth = Number(argv[++i]);
     else if (a === "--quality") quality = Number(argv[++i]);
     else if (a === "--format") format = (argv[++i] ?? "").toLowerCase();
@@ -81,7 +85,7 @@ function parseArgs(argv: string[]) {
     else if (a === "--dry-run") dryRun = true;
     else positional.push(a);
   }
-  return { folders: positional, platform, date, caption, likes, id, maxWidth, quality, format, dryRun, flat };
+  return { folders: positional, platform, date, caption, likes, id, url, maxWidth, quality, format, dryRun, flat };
 }
 
 // "2026-05-22" → "260522"
@@ -104,7 +108,7 @@ function deriveDate(folder: string, dateOverride: string): string {
 
 // shared config + (live) clients passed to each folder
 type Ctx = {
-  slug: string; platform: string; caption: string; likes: number; id: string;
+  slug: string; platform: string; caption: string; likes: number; id: string; url: string;
   maxWidth: number; quality: number; format: string;
   publicBase: string; bucket: string; dateOverride: string; dryRun: boolean; flat: boolean;
   s3: S3Client | null; supabase: SupabaseClient | null;
@@ -136,6 +140,7 @@ async function commitPost(postId: string, postDate: string, prepared: Prepared[]
     ratio: 1.33,
     films: [] as number[],
     images: prepared.map((p) => p.url),
+    source_url: ctx.url || null,
   };
 
   if (ctx.dryRun) {
@@ -143,7 +148,7 @@ async function commitPost(postId: string, postDate: string, prepared: Prepared[]
       const kb = (p.body.length / 1024).toFixed(0);
       console.log(`     ${p.from} → ${p.width}×${p.height}, ${kb} KB · ${p.url}`);
     });
-    console.log(`  📝 post ${postId}: ${row.images.length} image(s)`);
+    console.log(`  📝 post ${postId}: ${row.images.length} image(s)${row.source_url ? ` · 🔗 ${row.source_url}` : ""}`);
     return;
   }
 
@@ -190,7 +195,7 @@ async function processFolder(folder: string, ctx: Ctx): Promise<number> {
 
 // ─── main ──────────────────────────────────────────────────────────────────────
 async function main() {
-  const { folders, platform, date, caption, likes, id, maxWidth, quality, format, dryRun, flat } = parseArgs(process.argv.slice(2));
+  const { folders, platform, date, caption, likes, id, url, maxWidth, quality, format, dryRun, flat } = parseArgs(process.argv.slice(2));
 
   // ── validate shared inputs ──
   if (folders.length === 0) throw new Error('Missing <folder>. Usage: yarn add-photos <folder…> --platform <…> [--date YYYY-MM-DD]');
@@ -201,6 +206,7 @@ async function main() {
   // per-post flags can't be shared across a batch
   if (folders.length > 1 && date) throw new Error("--date can't be combined with multiple folders — each folder's date comes from its name.");
   if (folders.length > 1 && id) throw new Error("--id can't be combined with multiple folders — ids must be unique. Run one folder at a time to set an id.");
+  if (folders.length > 1 && url) throw new Error("--url can't be combined with multiple folders — each post has its own link. Run one folder at a time to set a url.");
   if (flat && id) throw new Error("--id can't be combined with --flat — each photo becomes its own post.");
 
   // ── env ──
@@ -221,7 +227,7 @@ async function main() {
 
   const ctx: Ctx = {
     slug: PLATFORMS[platform as PlatformKR],
-    platform, caption, likes, id, maxWidth, quality, format,
+    platform, caption, likes, id, url, maxWidth, quality, format,
     publicBase: R2_PUBLIC_BASE.replace(/\/$/, ""), // tolerate a trailing slash
     bucket: R2_BUCKET, dateOverride: date, dryRun, flat, s3, supabase,
   };
