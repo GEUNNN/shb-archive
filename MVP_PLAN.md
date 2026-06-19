@@ -6,7 +6,6 @@
 - **Backend**: Supabase (PostgreSQL + auto REST API) — final backend, no migration needed
 - **Data fetching**: Server Components fetch from Supabase → pass full dataset to Client Component → in-memory filter via `useState`
 - **Design**: Diary/scrapbook tone — sky-blue + coral `#F09884` + Ham-Nyang mascots (🐹/🐱)
-  - Full spec: `design_handoff_shb_archive/README.md`
 
 ## Routes (4)
 

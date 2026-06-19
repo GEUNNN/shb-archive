@@ -49,7 +49,6 @@ Planned data flow: Server Components fetch from Supabase → pass full dataset t
 ## SHB ARCHIVE — Design Rules
 
 > Fan-original archive app. Concept = fresh sky-blue (cheongryang) + coral accent + Ham-Nyang mascots (hamster/cat) + diary/scrapbook tone (handwriting · masking tape).
-> Full spec, screen details, screenshots: `design_handoff_shb_archive/README.md`.
 
 ### Top principle
 
