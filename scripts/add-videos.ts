@@ -45,7 +45,7 @@ import { createClient } from "@supabase/supabase-js";
 
 config({ path: ".env.local" });
 
-const CATEGORIES = ["뮤비", "음악방송", "직캠", "라이브", "비하인드", "자컨", "커버", "챌린지", "브이로그", "기타"] as const;
+const CATEGORIES = ["뮤비", "음악방송", "직캠", "라이브", "비하인드", "자컨", "커버", "챌린지", "브이로그", "트위터", "플러스챗", "기타"] as const;
 const UNCATEGORIZED = "미분류";
 const YT = "https://www.googleapis.com/youtube/v3";
 

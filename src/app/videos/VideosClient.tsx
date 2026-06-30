@@ -5,7 +5,7 @@ import { Video } from "@/lib/data";
 import VideoCard from "./components/VideoCard";
 import { MascotPair } from "@/components/diary/Mascots";
 
-const TAGS = ["전체", "뮤비", "음악방송", "직캠", "라이브", "비하인드", "자컨", "커버", "챌린지", "브이로그", "기타"];
+const TAGS = ["전체", "뮤비", "음악방송", "직캠", "라이브", "비하인드", "자컨", "커버", "챌린지", "브이로그", "트위터", "플러스챗", "기타"];
 
 const VideosClient: FC<{ videos: Video[] }> = ({ videos }) => {
   const [filter, setFilter] = useState("전체");

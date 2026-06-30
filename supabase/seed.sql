@@ -15,7 +15,9 @@ insert into public.tags (kind, label, sort_order) values
   ('category', '커버',       7),
   ('category', '챌린지',     8),
   ('category', '브이로그',   9),
-  ('category', '기타',       10)
+  ('category', '트위터',     10),
+  ('category', '플러스챗',   11),
+  ('category', '기타',       12)
 on conflict (kind, label) do nothing;
 
 -- ─── photos (from ALBUMS) ─────────────────────────────────────
