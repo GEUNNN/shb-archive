@@ -3,7 +3,7 @@
 ## Stack
 
 - **Framework**: Next.js 15 + Tailwind CSS + shadcn/ui (new-york, zinc)
-- **Backend**: Supabase (PostgreSQL + auto REST API) — final backend, no migration needed
+- **Backend**: Supabase (PostgreSQL) — currently queried directly from Server Components; a NestJS API layer is planned (see *Planned Architecture Evolution*)
 - **Data fetching**: Server Components fetch from Supabase → pass full dataset to Client Component → in-memory filter via `useState`
 - **Design**: Diary/scrapbook tone — sky-blue + coral `#F09884` + Ham-Nyang mascots (🐹/🐱)
 
@@ -44,46 +44,88 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY
 | Search                                                             | ❌ Post-MVP |
 | Individual detail view (`/photos/[id]`)                            | ❌ Post-MVP |
 | Favorites / bookmarks                                              | ❌ Post-MVP |
-| Schedule / Events page                                             | ❌ Post-MVP |
-| Profile / About page                                               | ❌ Post-MVP |
-| Discography page                                                   | ❌ Post-MVP |
 
 ---
 
 ## Current State
 
-| Feature                                        | Status            |
-| ---------------------------------------------- | ----------------- |
-| Mobile layout (375px)                          | ✅ Done           |
-| Header + Footer (3-tab) navigation             | ✅ Done           |
-| Photos page — carousel + filter badge UI       | ✅ Done           |
-| Videos page — thumbnail grid + filter badge UI | ✅ Done           |
-| Diary home screen                              | ❌ Not started    |
-| `/calendar` route                              | ❌ Not started    |
-| Filter logic (actual filtering behavior)       | ❌ Not connected  |
-| Design tokens (sky-blue palette, 박다현 font)  | ❌ Not applied    |
-| Real data / Supabase integration               | ❌ Mock data only |
+> ✅ **MVP shipped & deployed** — [shb-archive.vercel.app](https://shb-archive.vercel.app).
+> All four core routes are live with real data. Remaining items are Post-MVP enhancements.
+
+| Feature                                          | Status            |
+| ------------------------------------------------ | ----------------- |
+| Mobile layout (375px shell)                      | ✅ Done           |
+| Header + Footer (4-tab) navigation               | ✅ Done           |
+| Diary home (ON THIS DAY + recent gallery/videos) | ✅ Done           |
+| `/calendar` route — dynamic content calendar     | ✅ Done           |
+| Photos page — polaroid grid + album viewer       | ✅ Done           |
+| Videos page — feed + inline YouTube playback     | ✅ Done           |
+| Filter logic (in-memory, Photos + Videos)        | ✅ Done           |
+| Design tokens (sky-blue palette, 박다현 font)    | ✅ Done           |
+| Supabase integration (real data, RLS read-only)  | ✅ Done           |
+| YouTube ingest pipeline (`add-videos`)           | ✅ Done           |
+| Photo → R2 ingest pipeline (`add-photos`)        | ✅ Done           |
+| Search                                           | ⬜ Post-MVP       |
+| Detail view (`/photos/[id]`)                     | ⬜ Post-MVP       |
+| Favorites / bookmarks                            | ⬜ Post-MVP       |
+| Shorts tab (`is_shorts` data layer ready)        | ⬜ Post-MVP       |
 
 ---
 
-## Build Order
+## Build Order (completed)
 
-### Phase 1 — Design foundation
+### Phase 1 — Design foundation ✅
 
-1. Apply design tokens (color palette, `--radius: 22px`, 박다현 font)
-2. Redesign Header (mascot-pair + "SHB ARCHIVE" title)
-3. Expand Footer to 4 tabs (add `/calendar`)
-4. Implement diary home screen (DiaryOnThisDay + GalleryPreview + VideoPreview)
-5. Add `/calendar` stub route
+1. Applied design tokens (color palette, `--radius: 22px`, 박다현 font)
+2. Redesigned Header (mascot-pair + "SHB ARCHIVE" title)
+3. Expanded Footer to 4 tabs (added `/calendar`)
+4. Implemented diary home screen (DiaryOnThisDay + GalleryPreview + VideoPreview)
+5. Added `/calendar` route
 
-### Phase 2 — Data & interactivity
+### Phase 2 — Data & interactivity ✅
 
-6. Set up Supabase project + define schema (`photos`, `videos`, `tags`)
-7. Seed real data into Supabase
-8. Replace mock data with Supabase server-side queries
-9. Wire filter logic on Photos + Videos pages
-10. Wire calendar date selection → content list
-11. Implement photo lightbox + inline video player overlays
+6. Set up Supabase project + schema (`photos`, `videos`, `tags`) with RLS
+7. Built ingest pipelines: `add-videos` (YouTube Data API) + `add-photos` (sharp → R2)
+8. Replaced mock data with Supabase server-side queries
+9. Wired filter logic on Photos + Videos pages (in-memory)
+10. Wired calendar date selection → content list
+11. Implemented photo lightbox + inline YouTube player overlays
+
+### Phase 3 — Post-MVP (planned)
+
+- Search · detail view (`/photos/[id]`) · favorites · Shorts tab
+- AI를 활용한 자연어 검색 기능 (AI-powered natural-language search)
+- 백엔드 API 레이어(NestJS) 도입 — see *Planned Architecture Evolution* below
+
+---
+
+## Planned Architecture Evolution
+
+현재는 프론트엔드(Server Component)가 Supabase를 anon key로 **직접 쿼리**하는 구조입니다. 읽기 전용 공개 아카이브에는 충분하지만, 쓰기 작업과 비즈니스 로직이 늘어날 것을 대비해 **NestJS API 레이어를 추가**할 계획입니다.
+
+The app currently queries Supabase **directly** from Server Components (anon key, RLS read-only). That's sufficient for a read-only public archive, but as write operations and business logic grow, a **NestJS API layer** will be introduced.
+
+### Current
+
+```
+Next.js (Server Component) ──anon key──▶ Supabase (Postgres)
+```
+
+### Target
+
+```
+Next.js ──HTTP──▶ NestJS API ──service key──▶ Supabase (Postgres)
+```
+
+- **DB는 그대로 Supabase(Postgres) 유지** — 교체가 아니라, DB 앞에 API 레이어를 추가하는 것. NestJS에서 Prisma/TypeORM으로 연결.
+- 프론트는 더 이상 DB를 직접 쿼리하지 않고 NestJS API만 호출. service key는 백엔드에만 두어 노출 위험 제거.
+
+### Why
+
+- **(a) 쓰기 작업 대비** — 검색·즐겨찾기·조회수 집계 등 클라이언트가 DB를 직접 건드리면 안 되는 기능을 안전하게 처리.
+- **(b) 비즈니스 로직 캡슐화** — 지금 `queries.ts`에 흩어진 매핑·정렬 로직을 서버 레이어로 모아 일관성 확보.
+- **(c) 데이터 로딩 방식 전환** — 현재는 개발 편의로 전체 데이터를 한 번에 받아 인메모리 필터링하지만, 데이터가 늘면 **무한 스크롤 + 서버 사이드 필터/페이지네이션**으로 전환 필요. 이 로직을 둘 위치가 API 레이어.
+- **(d) AI 자연어 검색 기능** — 외부 AI API를 연동해 아카이브에 자연어로 질문하고 답을 받는 기능을 추가할 계획. (구체 설계는 추후)
 
 ---
 
@@ -109,4 +151,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY
 - YouTube thumbnail via `next/image` using `i.ytimg.com` (already an allowed remote host)
 - Click → replace thumbnail slot with `<iframe autoplay=1>` (no card size change)
 - Prefer `@next/third-parties` `<YouTubeEmbed>` or `lite-youtube-embed`
-- Duration/view-count: dummy values for now; server-prefetch via YouTube Data API as follow-up
+- Duration/view-count: fetched live from the YouTube Data API at ingest (`add-videos`), formatted KR-style (`26만`). No dummy values.
