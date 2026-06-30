@@ -1,7 +1,8 @@
 # SHB Archive
 
-> 한 아티스트의 활동을 사진·영상·캘린더로 모아 보는 팬 메이드 아카이브 웹앱.
+> 아티스트의 활동을 사진·영상·캘린더로 모아 보는 아카이브 웹앱.
 > A fan-made archive web app that collects an artist's activity into photos, videos, and a calendar.
+
 
 **Live**: [shb-archive.vercel.app](https://shb-archive.vercel.app)
 
@@ -47,7 +48,7 @@ A solo project with a diary/scrapbook tone, designed mobile-first (375px). Conte
                                           Client Component → useState 인메모리 필터
 ```
 
-- **읽기는 Server Component에서** anon key로 수행하고(RLS로 읽기 전용 보장), 전체 데이터셋을 Client Component로 내려보냅니다.
+- **읽기는 Server Component에서** anon key로 수행하고(RLS로 읽기 전용), 전체 데이터셋을 Client Component로 내려보냅니다.
 - **현재 필터링은 인메모리**로 처리합니다. 전체 데이터셋을 받아둔 뒤 필터를 바꿀 때마다 재쿼리하지 않고 배열을 거릅니다 — 현재 아카이브 규모에 적합한 선택입니다. (데이터가 늘면 무한 스크롤 + 서버 사이드 필터로 전환 예정 — *Roadmap* 참고)
 - **이미지 바이트는 DB에 저장하지 않습니다.** R2에 업로드한 뒤 공개 URL만 Postgres에 보관해, DB는 가볍게 유지합니다.
 
